@@ -1,4 +1,4 @@
-CREATE TABLE user_auth_v2 (
+CREATE TABLE users (
     login   VARCHAR(50),
     mdp     VARCHAR(255) NOT NULL,
     id_auth VARCHAR(50) NOT NULL,
@@ -7,5 +7,6 @@ CREATE TABLE user_auth_v2 (
     UNIQUE (id_auth)
 );
 
-INSERT INTO user_auth_v2 (login, mdp, id_auth, role)
-VALUES ('johndoe', '$2b$12$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', '1', 'user');
+# Insert user admin/password
+INSERT INTO users (login, mdp, id_auth, role)
+VALUES ('admin', '$2b$12$.ry7msXUwOYCUUsblmEaCOvNDFAMuIUZluAI3dYd09BN9B/xWzwXS', '1', 'admin');
