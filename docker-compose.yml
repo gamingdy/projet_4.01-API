@@ -1,0 +1,50 @@
+version: "3"
+
+services:
+    auth-api:
+        build:
+            context: .
+            dockerfile: Dockerfile-auth
+        ports:
+            - "81:8000"
+        volumes:
+            - ./src/auth:/app/src/auth
+            - .env.auth:/app/.env.auth
+
+    api:
+        build:
+            context: .
+            dockerfile: Dockerfile-api
+        ports:
+            - "80:8000"
+        volumes:
+            - ./src/cabinet:/app/src/cabinet
+            - .env:/app/.env
+
+    db-auth:
+        image: mariadb
+        container_name: auth_api_db
+        #restart: always
+        volumes:
+            - ./db/schema_auth.sql:/docker-entrypoint-initdb.d/init.sql
+        env_file:
+            - .env.db
+        ports:
+            - "3306:3306"
+
+    db-api:
+        image: mariadb
+        container_name: api_db
+        #restart: always
+        volumes:
+            - ./db/schema.sql:/docker-entrypoint-initdb.d/init.sql
+        env_file:
+            - .env.db
+        ports:
+            - "3305:3306"
+
+    adminer:
+        image: adminer
+        #restart: always
+        ports:
+            - "8080:8080"
