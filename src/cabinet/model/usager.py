@@ -1,0 +1,11 @@
+class Usager:
+    id: int
+    civilite: str
+    nom: str
+    prenom: str
+    sexe: str
+    adresse: str
+    code_postal: int
+    ville: str
+    date_nais: str
+    num_secu: int
