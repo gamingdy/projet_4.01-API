@@ -1,4 +1,5 @@
 from .connection import Connection
+from ..model.medecin import Medecin
 class DaoMedecin: 
     def __init__(self):
         self.db = Connection().get_connection()
@@ -9,42 +10,48 @@ class DaoMedecin:
             "SELECT * FROM medecin WHERE id=%s",
             (id_medecin,),
         )
-        usager=cursor.fetchtone()
+        row=cursor.fetchtone()
         cursor.close()
-        return(usager)
+        if row:
+            return Medecin(*row)
+        return None
 
     def get_medecins(self):
         cursor = self.db.cursor()
         cursor.execute(
             "SELECT * FROM medecin",
         )
-        usagers=cursor.fetchall()
+        rows = cursor.fetchall()
         cursor.close()
-        return(usagers)
+        medecins = []
+        for row in rows:
+            medecin = Medecin(*row)
+            medecins.append(medecin)
+        return medecins
 
-    def add_medecin(self,civilite,nom,prenom):
+    def add_medecin(self,medecin:Medecin):
         cursor = self.db.cursor()
         cursor.execute(
             "INSERT INTO medecin (civilite,nom,prenom) VALUES (%s,%s,%s)",
-            (civilite,nom,prenom,),
+            (medecin.civilite,medecin.nom,medecin.prenom,),
         )
         self.db.commit()
         cursor.close()
     
-    def update_medecin(self,id,civilite,nom,prenom):
+    def update_medecin(self,medecin:Medecin):
         cursor = self.db.cursor()
         cursor.execute(
             "UPDATE medecin SET civilite=%s, nom=%s, prenom=%s WHERE id=%s",
-            (civilite,nom,prenom,id,),
+            (medecin.civilite,medecin.nom,medecin.prenom,medecin.id,),
         )
         self.db.commit()
         cursor.close()
        
-    def delete_medecin(self,id):
+    def delete_medecin(self,medecin:Medecin):
         cursor = self.db.cursor()
         cursor.execute(
             "DELETE FROM medecin WHERE id=%s",
-            (id,),
+            (medecin.id,),
         )
         self.db.commit()
         cursor.close()

@@ -9,15 +9,21 @@ class DaoUsager:
     def get_usager(self, id_usager):
         cursor = self.db.cursor()
         cursor.execute("SELECT * FROM usager WHERE id = %s", (id_usager,))
-        usager = cursor.fetchone()
+        row = cursor.fetchone()
         cursor.close()
-        return usager
+        if row:
+            return Usager(*row[1:])
+        return None
 
     def get_usagers(self):
         cursor = self.db.cursor()
         cursor.execute("SELECT * FROM usager")
-        usagers = cursor.fetchall()
+        rows = cursor.fetchall()
         cursor.close()
+        usagers = [] 
+        for row in rows:
+            usager = Usager(*row[1:]) 
+            usagers.append(usager) 
         return usagers
 
     def add_usager(self, usager: Usager):
@@ -45,6 +51,15 @@ class DaoUsager:
         cursor.execute(
             "UPDATE usager SET nom = %s, prenom = %s, date_naissance = %s WHERE id = %s",
             (usager.nom, usager.prenom, usager.date_naissance, usager.id),
+        )
+        self.db.commit()
+        cursor.close()
+
+    def delete_usager(self,usager):
+        cursor = self.db.cursor()
+        cursor.execute(
+            "DELETE FROM usager WHERE id = %s",
+            (usager.id),
         )
         self.db.commit()
         cursor.close()
