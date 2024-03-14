@@ -1,6 +1,10 @@
 from fastapi import APIRouter
 
+from src.cabinet.dao.dao_usager import DaoUsager
+
 router = APIRouter(prefix="/usager", tags=["usager"])
+
+dao_usager = DaoUsager()
 
 
 @router.get("/test")
@@ -10,7 +14,12 @@ async def jsp():
 
 @router.get("/")
 async def get_all():
-    return ""
+    return dao_usager.get_usagers()
+
+
+@router.get("/{id}")
+async def get_one(id: int):
+    return dao_usager.get_usager(id)
 
 
 @router.post("/")
@@ -25,9 +34,4 @@ async def update():
 
 @router.delete("/{id}")
 async def delete():
-    return ""
-
-
-@router.get("/{id}")
-async def get_one():
     return ""
