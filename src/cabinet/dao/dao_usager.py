@@ -12,7 +12,7 @@ class DaoUsager:
         row = cursor.fetchone()
         cursor.close()
         if row:
-            return Usager(*row[1:])
+            return Usager(*row)
         return None
 
     def get_usagers(self):
@@ -20,10 +20,10 @@ class DaoUsager:
         cursor.execute("SELECT * FROM usager")
         rows = cursor.fetchall()
         cursor.close()
-        usagers = [] 
+        usagers = []
         for row in rows:
-            usager = Usager(*row[1:]) 
-            usagers.append(usager) 
+            usager = Usager(*row)
+            usagers.append(usager)
         return usagers
 
     def add_usager(self, usager: Usager):
@@ -55,11 +55,11 @@ class DaoUsager:
         self.db.commit()
         cursor.close()
 
-    def delete_usager(self,usager):
+    def delete_usager(self, usager):
         cursor = self.db.cursor()
         cursor.execute(
             "DELETE FROM usager WHERE id = %s",
-            (usager.id),
+            (usager.id,),
         )
         self.db.commit()
         cursor.close()
