@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from src.cabinet.dao.dao_usager import DaoUsager
+from src.cabinet.model.usager import UsagerBase
 
 router = APIRouter(prefix="/usager", tags=["usager"])
 
@@ -23,8 +24,8 @@ async def get_one(id: int):
 
 
 @router.post("/")
-async def create():
-    return ""
+async def create(usager: UsagerBase):
+    return usager
 
 
 @router.patch("/{id}")
@@ -35,3 +36,4 @@ async def update():
 @router.delete("/{id}")
 async def delete():
     return ""
+ 
