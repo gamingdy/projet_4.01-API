@@ -1,3 +1,6 @@
+from pydantic import BaseModel
+
+
 class Usager:
 
     def __init__(
@@ -27,3 +30,6 @@ class Usager:
         self.lieu_naissance = lieu_nais
         self.num_secu = num_secu
         self.id_medecin = id_medecin
+
+
+class UsagerBase(BaseModel): ...
