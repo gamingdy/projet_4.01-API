@@ -1,4 +1,5 @@
-from fastapi import APIRouter
+import mysql.connector.errors as myql_errors
+from fastapi import APIRouter, HTTPException
 
 from src.cabinet.dao.dao_medecin import DaoMedecin
 from src.cabinet.model.medecin import MedecinCreate, MedecinUpdate
@@ -14,7 +15,10 @@ async def get_all():
 
 @router.get("/{id}")
 async def get_one(id: int):
-    return dao_medecin.get_medecin(id)
+    medecin = dao_medecin.get_medecin(id)
+    if not medecin:
+        raise HTTPException(status_code=404, detail="Medecin not found")
+    return medecin
 
 
 @router.post("/", status_code=201)
@@ -26,15 +30,18 @@ async def create(medecin: MedecinCreate):
 @router.patch("/{id}")
 async def update(id: int, medecin: MedecinUpdate):
 
+    previous_value = dao_medecin.get_medecin(id)
+    if not previous_value:
+        raise HTTPException(status_code=404, detail="Medecin not found")
+    previous_value_dict = previous_value.__dict__
+
     medecin_dict = medecin.__dict__
     given_values = medecin_dict.values()
     if not any(given_values):
-        return ""
-
-    previous_value = dao_medecin.get_medecin(id)
-    if not previous_value:
-        return ""
-    previous_value_dict = previous_value.__dict__
+        raise HTTPException(
+            status_code=400,
+            detail="No values given, you must provide at least one value to update",
+        )
 
     for key, value in medecin_dict.items():
         if not value:
@@ -47,7 +54,13 @@ async def update(id: int, medecin: MedecinUpdate):
 async def delete(id: int):
     medecin = dao_medecin.get_medecin(id)
     if medecin:
-        dao_medecin.delete_medecin(id)
-        return medecin
+        try:
+            dao_medecin.delete_medecin(id)
+            return medecin
+        except myql_errors.IntegrityError as e:
+            raise HTTPException(
+                status_code=409,
+                detail="You can't delete this medecin because it is used in another table",
+            )
 
-    return ""
+    raise HTTPException(status_code=404, detail="Medecin not found")
