@@ -9,7 +9,13 @@ class Medecin:
         self.prenom = prenom
 
 
-class MedecinBase(BaseModel):
+class MedecinCreate(BaseModel):
     civilite: str
     nom: str
     prenom: str
+
+
+class MedecinUpdate(BaseModel):
+    civilite: str = None
+    nom: str = None
+    prenom: str = None
