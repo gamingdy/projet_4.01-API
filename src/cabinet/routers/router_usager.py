@@ -2,9 +2,11 @@
 import mysql.connector.errors as myql_errors
 from fastapi import APIRouter, HTTPException
 from src.cabinet.dao.dao_usager import DaoUsager
-from src.cabinet.model.usager import UsagerBase
+from src.cabinet.model.usager import UsagerUpdate,UsagerCreate
 from datetime import datetime
-
+import logging
+from src.cabinet.utils.utils import change_date_format
+logger = logging.getLogger("uvicorn")
 router = APIRouter(prefix="/usagers", tags=["usagers"])
 
 dao_usager = DaoUsager()
@@ -26,15 +28,25 @@ async def get_one(id: int):
 
 @router.post("/", status_code=201)
 async def create(usager: UsagerCreate):
+    new_date=change_date_format(usager.date_nais)
+    if new_date["error"]:
+        raise HTTPException(status_code=400, detail=new_date["content"])
+    usager.date_nais = new_date["content"]
     usager = dao_usager.add_usager(usager)
     return usager
 
 @router.patch("/{id}")
-async def update(usager: UsagerBase):
+async def update(id: int,usager: UsagerUpdate):
     previous_value = dao_usager.get_usager(id)
     if not previous_value:
         raise HTTPException(status_code=404, detail="Usager not found")
     previous_value_dict = previous_value.__dict__
+
+    if usager.date_nais!=None :
+        new_date=change_date_format(usager.date_nais)
+        if new_date["error"]:
+            raise HTTPException(status_code=400, detail=new_date["content"])
+        usager.date_nais = new_date["content"]
 
     usager_dict = usager.__dict__
     given_values = usager_dict.values()
@@ -49,23 +61,15 @@ async def update(usager: UsagerBase):
             setattr(usager, key, previous_value_dict[key])
 
     #vérifier le sexe
+    """
     if (usager.sexe!='F'|usager.sexe!='H'):
         raise HTTPException(
             status_code=400,
             detail="The sexe must be F or H",
         )
-    #verifier la date
-    inserted_format = "%d/%m/%Y"
-    given_date = usager.date_nais
-    try:
-        date = datetime.strptime(given_date, inserted_format)
-        usager.date_nais = date.strftime("%Y-%m-%d")
-    except ValueError as e:
-        raise HTTPException(
-            status_code=400,
-            detail="The birth date given must be in a 01/01/2000 format",
-        )
-    return dao_usager.add_usager(usager)
+    """
+    
+    return dao_usager.update_usager(id,usager)
    
 
 

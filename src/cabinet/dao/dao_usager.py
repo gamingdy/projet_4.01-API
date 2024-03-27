@@ -8,7 +8,7 @@ class DaoUsager:
 
     def get_usager(self, id_usager) -> Usager | None:
         cursor = self.db.cursor()
-        cursor.execute("SELECT * FROM usager WHERE id = %s", (id_usager,))
+        cursor.execute("SELECT * FROM usager WHERE id=%s", (id_usager,))
         row = cursor.fetchone()
         cursor.close()
         if row:
@@ -52,8 +52,8 @@ class DaoUsager:
     def update_usager(self, id:int, usager:UsagerUpdate) -> Usager | None:
         cursor = self.db.cursor()
         cursor.execute(
-            "UPDATE usager SET nom = %s, prenom = %s, date_naissance = %s WHERE id = %s",
-            (usager.nom, usager.prenom, usager.date_nais, id),
+            "UPDATE usager SET civilite=%s, nom = %s, prenom = %s, date_nais = %s , sexe =%s, adresse=%s, code_postal=%s, ville=%s, lieu_nais=%s, num_secu=%s, id_medecin=%s WHERE id = %s",
+            (usager.civilite,usager.nom, usager.prenom, usager.date_nais, usager.sexe,usager.adresse,usager.code_postal,usager.ville,usager.lieu_nais,usager.num_secu,usager.id_medecin,id),
         )
         self.db.commit()
         cursor.close()
