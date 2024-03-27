@@ -11,11 +11,11 @@ class Usager:
         prenom: str,
         sexe: str,
         adresse: str,
-        code_postal: int,
+        code_postal: str,
         ville: str,
         date_nais: str,
         lieu_nais: str,
-        num_secu: int,
+        num_secu: str,
         id_medecin: int | None = None,
     ):
         self.id = id
@@ -32,4 +32,15 @@ class Usager:
         self.id_medecin = id_medecin
 
 
-class UsagerBase(BaseModel): ...
+class UsagerBase(BaseModel): 
+    civilite: str
+    nom: str
+    prenom: str
+    sexe: str
+    adresse: str
+    code_postal: str
+    ville: str
+    date_nais: str
+    lieu_nais: str
+    num_secu: str
+    id_medecin: int = None

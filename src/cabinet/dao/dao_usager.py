@@ -1,5 +1,5 @@
 from .connection import Connection
-from ..model.usager import Usager
+from ..model.usager import UsagerBase,Usager
 
 
 class DaoUsager:
@@ -26,11 +26,10 @@ class DaoUsager:
             usagers.append(usager)
         return usagers
 
-    def add_usager(self, usager: Usager):
+    def add_usager(self, usager: UsagerBase):
         cursor = self.db.cursor()
         cursor.execute(
-            "INSERT INTO usager (civilite,nom, prenom,sexe,adresse,code_postal,ville,date_nais,num_secu ) VALUES (%s, "
-            "%s, %s, %s, %s, %s, %s, %s, %s,%s)",
+            "INSERT INTO usager (civilite, nom, prenom, sexe, adresse, code_postal, ville, date_nais, lieu_nais, num_secu, id_medecin) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s,%s,%s)",
             (
                 usager.civilite,
                 usager.nom,
@@ -40,13 +39,17 @@ class DaoUsager:
                 usager.code_postal,
                 usager.ville,
                 usager.date_nais,
+                usager.lieu_nais,
                 usager.num_secu,
+                usager.id_medecin,
             ),
         )
         self.db.commit()
+        last_id = cursor.lastrowid
         cursor.close()
+        return self.get_usager(last_id)
 
-    def update_usager(self, usager):
+    def update_usager(self, usager:UsagerBase):
         cursor = self.db.cursor()
         cursor.execute(
             "UPDATE usager SET nom = %s, prenom = %s, date_naissance = %s WHERE id = %s",
@@ -55,11 +58,11 @@ class DaoUsager:
         self.db.commit()
         cursor.close()
 
-    def delete_usager(self, usager):
+    def delete_usager(self, id):
         cursor = self.db.cursor()
         cursor.execute(
             "DELETE FROM usager WHERE id = %s",
-            (usager.id,),
+            (id,),
         )
         self.db.commit()
         cursor.close()
