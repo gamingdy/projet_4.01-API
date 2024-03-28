@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-def change_date_format(given_date):
+def date_to_sql(given_date):
 
     inserted_format = "%d/%m/%Y"
     try:

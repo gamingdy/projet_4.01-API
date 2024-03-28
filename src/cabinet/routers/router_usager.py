@@ -1,17 +1,16 @@
+import logging
 
 import mysql.connector.errors as myql_errors
 from fastapi import APIRouter, HTTPException
+
 from src.cabinet.dao.dao_usager import DaoUsager
-from src.cabinet.model.usager import UsagerUpdate,UsagerCreate
-from datetime import datetime
-import logging
-from src.cabinet.utils.utils import change_date_format
+from src.cabinet.model.usager import UsagerCreate, UsagerUpdate
+from src.cabinet.utils.utils import date_to_sql
+
 logger = logging.getLogger("uvicorn")
 router = APIRouter(prefix="/usagers", tags=["usagers"])
 
 dao_usager = DaoUsager()
-
-
 
 
 @router.get("/")
@@ -26,24 +25,26 @@ async def get_one(id: int):
         raise HTTPException(status_code=404, detail="Usager not found")
     return usager
 
+
 @router.post("/", status_code=201)
 async def create(usager: UsagerCreate):
-    new_date=change_date_format(usager.date_nais)
+    new_date = date_to_sql(usager.date_nais)
     if new_date["error"]:
         raise HTTPException(status_code=400, detail=new_date["content"])
     usager.date_nais = new_date["content"]
     usager = dao_usager.add_usager(usager)
     return usager
 
+
 @router.patch("/{id}")
-async def update(id: int,usager: UsagerUpdate):
+async def update(id: int, usager: UsagerUpdate):
     previous_value = dao_usager.get_usager(id)
     if not previous_value:
         raise HTTPException(status_code=404, detail="Usager not found")
     previous_value_dict = previous_value.__dict__
 
-    if usager.date_nais!=None :
-        new_date=change_date_format(usager.date_nais)
+    if usager.date_nais != None:
+        new_date = date_to_sql(usager.date_nais)
         if new_date["error"]:
             raise HTTPException(status_code=400, detail=new_date["content"])
         usager.date_nais = new_date["content"]
@@ -60,7 +61,7 @@ async def update(id: int,usager: UsagerUpdate):
         if not value:
             setattr(usager, key, previous_value_dict[key])
 
-    #vérifier le sexe
+    # vérifier le sexe
     """
     if (usager.sexe!='F'|usager.sexe!='H'):
         raise HTTPException(
@@ -68,9 +69,8 @@ async def update(id: int,usager: UsagerUpdate):
             detail="The sexe must be F or H",
         )
     """
-    
-    return dao_usager.update_usager(id,usager)
-   
+
+    return dao_usager.update_usager(id, usager)
 
 
 @router.delete("/{id}")
@@ -87,5 +87,3 @@ async def delete(id: int):
             )
 
     raise HTTPException(status_code=404, detail="usager not found")
-
- 
