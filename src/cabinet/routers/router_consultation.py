@@ -49,11 +49,7 @@ async def create(consultation: ConsultationCreate):
 
     consultation.date_consult = new_date["content"]
 
-    if not check_hour(consultation.heure_consult):
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid heure_consult value. Must be in 'hh:mm' format.",
-        )
+    check_hour(consultation.heure_consult)
 
     consultation = dao_consultation.add_consultation(consultation)
 
@@ -74,11 +70,7 @@ async def update(id: int, consultaion: ConsultationUpdate):
         consultaion.date_consult = new_date["content"]
 
     if consultaion.heure_consult is not None:
-        if not check_hour(consultaion.heure_consult):
-            raise HTTPException(
-                status_code=400,
-                detail="Invalid heure_consult value. Must be in 'hh:mm' format and valid hour.",
-            )
+        check_hour(consultaion.heure_consult)
 
     update_value(previous_value, consultaion)
 

@@ -27,9 +27,11 @@ def sql_to_hour(given_hour):
 def check_hour(heure_consult):
     try:
         datetime.strptime(heure_consult, "%H:%M")
-        return True
     except ValueError:
-        return False
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid heure_consult value. Must be in 'hh:mm' format and valid hour.",
+        )
 
 
 def update_value(previous_value, new_value):
