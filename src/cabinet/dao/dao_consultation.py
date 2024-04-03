@@ -1,12 +1,16 @@
 from .connection import Connection
-from ..model.consultation import Consultation
+from ..model.consultation import (
+    Consultation,
+    ConsultationCreate,
+    ConsultationUpdate,
+)
 
 
 class DaoConsultation:
     def __init__(self):
         self.db = Connection().get_connection()
 
-    def get_consultation(self, id_consultation):
+    def get_consultation(self, id_consultation) -> Consultation | None:
         cursor = self.db.cursor()
         cursor.execute(
             "SELECT * FROM consultation WHERE id=%s",
@@ -18,7 +22,7 @@ class DaoConsultation:
             return Consultation(*row)
         return None
 
-    def get_consultations(self):
+    def get_consultations(self) -> list[Consultation]:
         cursor = self.db.cursor()
         cursor.execute(
             "SELECT * FROM consultation",
@@ -31,7 +35,9 @@ class DaoConsultation:
             consultations.append(consulation)
         return consultations
 
-    def add_consultation(self, consultation: Consultation):
+    def add_consultation(
+        self, consultation: ConsultationCreate
+    ) -> Consultation:
         cursor = self.db.cursor()
         cursor.execute(
             "INSERT INTO consultation (date_consult, heure_consult, duree_consult, id_medecin, id_usager) VALUES (%s,"
@@ -45,9 +51,13 @@ class DaoConsultation:
             ),
         )
         self.db.commit()
+        last_id = cursor.lastrowid
         cursor.close()
+        return self.get_consultation(last_id)
 
-    def update_consultation(self, consultation: Consultation):
+    def update_consultation(
+        self, id_consultation: int, consultation: ConsultationUpdate
+    ) -> Consultation:
         cursor = self.db.cursor()
         cursor.execute(
             "UPDATE consultation SET date_consult=%s, heure_consult=%s, duree_consult=%s, id_medecin=%s, id_usager=%s "
@@ -58,17 +68,18 @@ class DaoConsultation:
                 consultation.duree_consult,
                 consultation.id_medecin,
                 consultation.id_usager,
-                consultation.id,
+                id_consultation,
             ),
         )
         self.db.commit()
         cursor.close()
+        return self.get_consultation(id_consultation)
 
-    def delete_consultation(self, consultation: Consultation):
+    def delete_consultation(self, id: int) -> None:
         cursor = self.db.cursor()
         cursor.execute(
             "DELETE FROM consultation WHERE id=%s",
-            (consultation.id,),
+            (id,),
         )
         self.db.commit()
         cursor.close()
