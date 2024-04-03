@@ -34,6 +34,14 @@ def check_hour(heure_consult):
         )
 
 
+def check_civilite(civilite):
+    if civilite not in ["M", "Mme"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid civilite value. Must be 'M' or 'Mme' .",
+        )
+
+
 def update_value(previous_value, new_value):
     previous_value_dict = previous_value.__dict__
 

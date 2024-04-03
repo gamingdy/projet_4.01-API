@@ -7,7 +7,7 @@ from src.cabinet.model.medecin import (
     MedecinResponse,
     MedecinUpdate,
 )
-from src.cabinet.utils.utils import update_value
+from src.cabinet.utils.utils import check_civilite, update_value
 
 router = APIRouter(prefix="/medecins", tags=["medecins"])
 dao_medecin = DaoMedecin()
@@ -28,12 +28,15 @@ async def get_one(id: int):
 
 @router.post("/", status_code=201, response_model=MedecinResponse)
 async def create(medecin: MedecinCreate):
+    check_civilite(medecin.civilite)
     medecin = dao_medecin.add_medecin(medecin)
     return medecin
 
 
 @router.patch("/{id}", response_model=MedecinResponse)
 async def update(id: int, medecin: MedecinUpdate):
+    if medecin.civilite:
+        check_civilite(medecin.civilite)
 
     previous_value = dao_medecin.get_medecin(id)
     if not previous_value:
