@@ -9,6 +9,13 @@ class Medecin:
         self.prenom = prenom
 
 
+class MedecinResponse(BaseModel):
+    id: int
+    civilite: str
+    nom: str
+    prenom: str
+
+
 class MedecinCreate(BaseModel):
     civilite: str
     nom: str

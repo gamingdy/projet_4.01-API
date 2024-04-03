@@ -1,5 +1,3 @@
-from typing import List
-
 from fastapi import APIRouter, HTTPException
 
 from src.cabinet.dao.dao_consultation import DaoConsultation
@@ -18,7 +16,7 @@ dao_usager = DaoUsager()
 dao_medecin = DaoMedecin()
 
 
-@router.get("/", response_model=List[ConsultationResponse])
+@router.get("/", response_model=list[ConsultationResponse])
 async def get_all():
     return dao_consultation.get_consultations()
 
