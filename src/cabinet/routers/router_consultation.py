@@ -3,6 +3,8 @@ from typing import List
 from fastapi import APIRouter, HTTPException
 
 from src.cabinet.dao.dao_consultation import DaoConsultation
+from src.cabinet.dao.dao_medecin import DaoMedecin
+from src.cabinet.dao.dao_usager import DaoUsager
 from src.cabinet.model.consultation import (
     ConsultationCreate,
     ConsultationResponse,
@@ -12,6 +14,8 @@ from src.cabinet.utils.utils import check_hour, date_to_sql, update_value
 
 router = APIRouter(prefix="/consultations", tags=["consultations"])
 dao_consultation = DaoConsultation()
+dao_usager = DaoUsager()
+dao_medecin = DaoMedecin()
 
 
 @router.get("/", response_model=List[ConsultationResponse])
@@ -42,6 +46,14 @@ async def create(consultation: ConsultationCreate):
             status_code=400,
             detail="Invalid duree_consult value. Must be an integer.",
         )
+
+    usager = dao_usager.get_usager(consultation.id_usager)
+    if not usager:
+        raise HTTPException(status_code=404, detail="Usager not found")
+
+    medecin = dao_medecin.get_medecin(consultation.id_medecin)
+    if not medecin:
+        raise HTTPException(status_code=404, detail="Medecin not found")
 
     new_date = date_to_sql(consultation.date_consult)
     if new_date["error"]:
