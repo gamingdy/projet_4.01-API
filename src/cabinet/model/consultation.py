@@ -47,3 +47,14 @@ class ConsultationUpdate(BaseModel):
     date_consult: str = None
     heure_consult: str = None
     duree_consult: str = None
+
+
+class MedecinStats:
+    def __init__(self, id_medecin: int, total_duree: float):
+        self.id_medecin = id_medecin
+        self.total_duree = total_duree
+
+
+class MedecinStatsResponse(BaseModel):
+    id_medecin: int
+    total_duree: float

@@ -1,5 +1,5 @@
 from .connection import Connection
-from ..model.usager import UsagerBase,Usager,UsagerCreate,UsagerUpdate
+from ..model.usager import Usager, UsagerCreate, UsagerUpdate
 
 
 class DaoUsager:
@@ -15,7 +15,7 @@ class DaoUsager:
             return Usager(*row)
         return None
 
-    def get_usagers(self)-> list[Usager]:
+    def get_usagers(self) -> list[Usager]:
         cursor = self.db.cursor()
         cursor.execute("SELECT * FROM usager")
         rows = cursor.fetchall()
@@ -26,10 +26,11 @@ class DaoUsager:
             usagers.append(usager)
         return usagers
 
-    def add_usager(self, usager: UsagerCreate)-> Usager | None:
+    def add_usager(self, usager: UsagerCreate) -> Usager | None:
         cursor = self.db.cursor()
         cursor.execute(
-            "INSERT INTO usager (civilite, nom, prenom, sexe, adresse, code_postal, ville, date_nais, lieu_nais, num_secu, id_medecin) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s,%s,%s)",
+            "INSERT INTO usager (civilite, nom, prenom, sexe, adresse, code_postal, ville, date_nais, lieu_nais, "
+            "num_secu, id_medecin) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s,%s,%s)",
             (
                 usager.civilite,
                 usager.nom,
@@ -49,11 +50,25 @@ class DaoUsager:
         cursor.close()
         return self.get_usager(last_id)
 
-    def update_usager(self, id:int, usager:UsagerUpdate) -> Usager | None:
+    def update_usager(self, id: int, usager: UsagerUpdate) -> Usager | None:
         cursor = self.db.cursor()
         cursor.execute(
-            "UPDATE usager SET civilite=%s, nom = %s, prenom = %s, date_nais = %s , sexe =%s, adresse=%s, code_postal=%s, ville=%s, lieu_nais=%s, num_secu=%s, id_medecin=%s WHERE id = %s",
-            (usager.civilite,usager.nom, usager.prenom, usager.date_nais, usager.sexe,usager.adresse,usager.code_postal,usager.ville,usager.lieu_nais,usager.num_secu,usager.id_medecin,id),
+            "UPDATE usager SET civilite=%s, nom = %s, prenom = %s, date_nais = %s , sexe =%s, adresse=%s, "
+            "code_postal=%s, ville=%s, lieu_nais=%s, num_secu=%s, id_medecin=%s WHERE id = %s",
+            (
+                usager.civilite,
+                usager.nom,
+                usager.prenom,
+                usager.date_nais,
+                usager.sexe,
+                usager.adresse,
+                usager.code_postal,
+                usager.ville,
+                usager.lieu_nais,
+                usager.num_secu,
+                usager.id_medecin,
+                id,
+            ),
         )
         self.db.commit()
         cursor.close()

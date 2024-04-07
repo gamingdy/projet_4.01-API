@@ -67,24 +67,24 @@ async def create(consultation: ConsultationCreate):
 
 
 @router.patch("/{id}", response_model=ConsultationResponse)
-async def update(id: int, consultaion: ConsultationUpdate):
+async def update(id: int, consultation: ConsultationUpdate):
 
     previous_value = dao_consultation.get_consultation(id)
     if not previous_value:
         raise HTTPException(status_code=404, detail="Consultation not found")
 
-    if consultaion.date_consult is not None:
-        new_date = date_to_sql(consultaion.date_consult)
+    if consultation.date_consult is not None:
+        new_date = date_to_sql(consultation.date_consult)
         if new_date["error"]:
             raise HTTPException(status_code=400, detail=new_date["content"])
-        consultaion.date_consult = new_date["content"]
+        consultation.date_consult = new_date["content"]
 
-    if consultaion.heure_consult is not None:
-        check_hour(consultaion.heure_consult)
+    if consultation.heure_consult is not None:
+        check_hour(consultation.heure_consult)
 
-    update_value(previous_value, consultaion)
+    update_value(previous_value, consultation)
 
-    return dao_consultation.update_consultation(id, consultaion)
+    return dao_consultation.update_consultation(id, consultation)
 
 
 @router.delete("/{id}", response_model=ConsultationResponse)

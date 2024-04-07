@@ -10,7 +10,12 @@ from src.cabinet.routers import (
     router_usager,
 )
 
-app = FastAPI()
+description = ""
+app = FastAPI(
+    title="API Cabinet Medical",
+    version="1.0",
+    description=description,
+)
 
 
 def cleared_loc(lst, value):

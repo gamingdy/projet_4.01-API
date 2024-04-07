@@ -3,6 +3,7 @@ from ..model.consultation import (
     Consultation,
     ConsultationCreate,
     ConsultationUpdate,
+    MedecinStats,
 )
 
 
@@ -83,3 +84,18 @@ class DaoConsultation:
         )
         self.db.commit()
         cursor.close()
+
+    def get_total_duree_rdv_before_today(self) -> list[MedecinStats]:
+        sql = (
+            "SELECT id_medecin,ROUND(SUM(duree_consult)/60,2) AS total FROM consultation WHERE "
+            "date_consult<=CURDATE() GROUP BY id_medecin"
+        )
+
+        cursor = self.db.cursor()
+        cursor.execute(sql)
+        rows = cursor.fetchall()
+        cursor.close()
+        result = []
+        for row in rows:
+            result.append(MedecinStats(*row))
+        return result

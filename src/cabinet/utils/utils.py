@@ -42,6 +42,40 @@ def check_civilite(civilite):
         )
 
 
+def check_sexe(sexe):
+    if sexe not in ["H", "F"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid sexe value. Must be 'H' or 'F' .",
+        )
+
+
+def check_int(value, value_name):
+    if not value.isdigit():
+        raise HTTPException(
+            status_code=400,
+            detail=f"The {value_name} must be a valid integer",
+        )
+
+
+def check_secu(num_secu):
+    check_int(num_secu, "num_secu")
+    if len(num_secu) != 15:
+        raise HTTPException(
+            status_code=400,
+            detail="The num_secu must be a valid integer of 15 digits",
+        )
+
+
+def check_code_postal(code_postal):
+    check_int(code_postal, "code_postal")
+    if len(code_postal) != 5:
+        raise HTTPException(
+            status_code=400,
+            detail="The code_postal must be a valid integer of 5 digits",
+        )
+
+
 def update_value(previous_value, new_value):
     previous_value_dict = previous_value.__dict__
 
