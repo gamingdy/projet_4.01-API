@@ -7,7 +7,7 @@ from jose import JWTError, jwt
 
 from src.auth.config import ALGORITHM, OAUTH2_SCHEME, SECRET_KEY
 from src.auth.model.token import TokenData
-from src.auth.model.user import User
+from src.auth.model.user import ConnectedUser
 
 
 def hash_password(password):
@@ -38,13 +38,12 @@ async def get_current_user(token: Annotated[str, Depends(OAUTH2_SCHEME)]):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("username")
-        role: str = payload.get("role")
         if username is None:
             raise credentials_exception
-        token_data = TokenData(username=username, role=role)
+        token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = User(username=token_data.username, role=token_data.role)
+    user = ConnectedUser(username=token_data.username)
     if user is None:
         raise credentials_exception
     return user

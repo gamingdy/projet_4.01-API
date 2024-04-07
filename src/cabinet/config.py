@@ -16,5 +16,7 @@ DB_PORT = os.getenv("DB_PORT")
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
+AUTH_URL = os.getenv("AUTH_URL")
+
 
 OAUTH2_SCHEME = OAuth2PasswordBearer(tokenUrl="token")

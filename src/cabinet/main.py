@@ -1,8 +1,12 @@
-from fastapi import FastAPI, Request, status
+import requests
+from fastapi import Depends
+from fastapi import FastAPI, status
+from fastapi import Request
 from fastapi.encoders import jsonable_encoder
-from fastapi.exceptions import RequestValidationError
+from fastapi.exceptions import HTTPException, RequestValidationError
 from fastapi.responses import JSONResponse
 
+from src.cabinet.config import AUTH_URL
 from src.cabinet.routers import (
     router_consultation,
     router_medecin,
@@ -10,11 +14,28 @@ from src.cabinet.routers import (
     router_usager,
 )
 
+
+def get_permissions(request: Request):
+    token = request.headers.get("Authorization")
+    if token:
+        headers = {"Authorization": token}
+        r = requests.get(AUTH_URL, headers=headers)
+        if r.status_code == 200:
+            return True
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="You must be logged in to access this route.",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+
+
 description = ""
 app = FastAPI(
     title="API Cabinet Medical",
     version="1.0",
     description=description,
+    dependencies=[Depends(get_permissions)],
 )
 
 
